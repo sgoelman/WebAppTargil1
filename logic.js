@@ -4,25 +4,25 @@ const EMPTY = 0;
 const HEIGHT = 10;
 const WIDTH = 10;
 
-var graphic = (function() {
+var graphic = (function () {
     var domGameBoardObject = document.getElementById("board");
     var domNamesTable = document.getElementById("namesTable");
 
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         this.getElementById("newGameButton").addEventListener("click", newGame);
     }, false);
 
     return {
-        setPieceClassNameInDOM: function(row, col, className) {
+        setPieceClassNameInDOM: function (row, col, className) {
             domGameBoardObject.rows[row].cells[col].children[0].className = className;
         },
-        addClickListenerToPieceInDOM: function(row, col, eventName, functionName) {
+        addClickListenerToPieceInDOM: function (row, col, eventName, functionName) {
             domGameBoardObject.rows[row].cells[col].addEventListener(
                 "click",
                 addClickListener
             );
         },
-        removeClickListenerFromPieceInDOM: function(
+        removeClickListenerFromPieceInDOM: function (
             row,
             col,
             eventName,
@@ -33,14 +33,14 @@ var graphic = (function() {
                 addClickListener
             );
         },
-        cleanDOMBoard: function() {
+        cleanDOMBoard: function () {
             for (var i = 0; i < 10; i++) {
                 for (var j = 0; j < 10; j++) {
                     domGameBoardObject.rows[i].cells[j].children[0].className = "empty piece";
                 }
             }
         },
-        setInitialStateInDOMBoard: function() {
+        setInitialStateInDOMBoard: function () {
             graphic.signCurrentPlayer();
             graphic.resetScoresInDom();
             domGameBoardObject.rows[4].cells[4].children[0].className = "white piece";
@@ -58,18 +58,18 @@ var graphic = (function() {
             domGameBoardObject.rows[5].cells[4].removeEventListener("click", addClickListener);
             domGameBoardObject.rows[5].cells[5].removeEventListener("click", addClickListener);
         },
-        hideBoardInDOM: function() {
+        hideBoardInDOM: function () {
             domGameBoardObject.style.display = "none";
         },
-        addPiecesScore: function() {
+        addPiecesScore: function () {
             domNamesTable.rows[0].cells[1].children[0].innerHTML = logic.getWhiteScore();
             domNamesTable.rows[0].cells[3].children[0].innerHTML = logic.getBlackScore();
         },
-        resetScoresInDom: function() {
+        resetScoresInDom: function () {
             domNamesTable.rows[0].cells[1].children[0].innerHTML = "2";
             domNamesTable.rows[0].cells[3].children[0].innerHTML = "2";
         },
-        signCurrentPlayer: function() {
+        signCurrentPlayer: function () {
             if (logic.getCurrentColor() === WHITE) {
                 domNamesTable.rows[0].cells[2].children[0].className = "black color";
                 domNamesTable.rows[0].cells[3].children[0].className = "black color";
@@ -83,24 +83,61 @@ var graphic = (function() {
                 domNamesTable.rows[0].cells[3].children[0].className = "black color activePlayer";
             }
         },
-        signValidSquare: function(row, col) {
+        signValidSquare: function (row, col) {
             domGameBoardObject.rows[row].cells[col].className = "valid square";
 
         },
-        cleanInvalidSquare: function(row, col) {
+        cleanInvalidSquare: function (row, col) {
             domGameBoardObject.rows[row].cells[col].className = "square";
         },
-        cleanAllMarkedSquares: function() {
+        cleanAllMarkedSquares: function () {
             elementArray = document.getElementsByClassName("valid square");
             while (elementArray.length) {
                 elementArray[0].className = "square";
             }
+        },
+        createBoard: function (boardSize) {
+            var table = '';
+            for (var r = 0; r < boardSize; r++) {
+                table += '<tr>';
+                for (var c = 0; c < boardSize; c++) {
+                    var id_square = r * boardSize + c;
+                    table += '<td class="square" id="' + id_square + '" >\n' +
+                        '<span class="piece"></span> </td>';
+                }
+                table += '</tr>';
+            }
+            table = '<tbody>' + table + '</tbody>';
+            table = '<table class="table" id="board">' + table + '</table>';
+            document.write(table);
+        },
+        initBoard: function () {
+            var table = '<button id="newGameButton">New Game</button>';
+            table = table + '<table class="table" id="namesTable">';
+            table = table + '<tbody>\n' +
+                '            <tr>\n' +
+                '            <td class="namesTableCell">\n' +
+                '            <span class="white color">White:</span>\n' +
+                '        </td>\n' +
+                '        <td class="namesTableCell">\n' +
+                '            <span class="white color">0</span>\n' +
+                '            </td>\n' +
+                '            <td class="namesTableCell">\n' +
+                '            <span class="black color">Black:</span>\n' +
+                '        </td>\n' +
+                '        <td class="namesTableCell">\n' +
+                '            <span class="black color">0</span>\n' +
+                '            </td>\n' +
+                '            </tr>\n' +
+                '            </tbody>';
+            table = table + '</table>'
+            document.write(table);
         }
 
     };
 })();
 
-var logic = (function() {
+var logic = (function () {
     var board = [];
     var blackNumber = 0;
     var whiteNumber = 0;
@@ -109,14 +146,14 @@ var logic = (function() {
     var rivalColor = BLACK;
 
     return {
-        getLocation: function(i, j) {
+        getLocation: function (i, j) {
             var location = null;
             if (isValidIndex(i, j)) {
                 location = board[i][j];
             }
             return location;
         },
-        cleanLogicBoard: function() {
+        cleanLogicBoard: function () {
             for (var i = 0; i < 10; i++) {
                 board[i] = [];
                 for (var j = 0; j < 10; j++) {
@@ -124,7 +161,7 @@ var logic = (function() {
                 }
             }
         },
-        setInitialStateInLogicBoard: function() {
+        setInitialStateInLogicBoard: function () {
             activePlayer = false;
             currentColor = WHITE;
             rivalColor = BLACK;
@@ -134,7 +171,7 @@ var logic = (function() {
             board[5][4] = BLACK;
             board[5][5] = WHITE;
         },
-        locatePiece: function(row, col, colorPiece) {
+        locatePiece: function (row, col, colorPiece) {
             var className = null;
             if (colorPiece === WHITE) {
                 className = "white piece";
@@ -145,7 +182,7 @@ var logic = (function() {
             graphic.setPieceClassNameInDOM(row, col, className);
             graphic.removeClickListenerFromPieceInDOM(row, col);
         },
-        changePlayer: function() {
+        changePlayer: function () {
             currentPlayer = !currentPlayer;
             if (!currentPlayer) {
                 currentColor = WHITE;
@@ -156,16 +193,16 @@ var logic = (function() {
             }
             graphic.signCurrentPlayer();
         },
-        getCurrentPlayer: function() {
+        getCurrentPlayer: function () {
             return currentPlayer;
         },
-        getCurrentColor: function() {
+        getCurrentColor: function () {
             return currentColor;
         },
-        getRivalColor: function() {
+        getRivalColor: function () {
             return rivalColor;
         },
-        addPiecesToLogicScore: function(numberOfPieces) {
+        addPiecesToLogicScore: function (numberOfPieces) {
             if (currentColor === WHITE) {
                 whiteNumber += numberOfPieces;
                 if (numberOfPieces > 1) {
@@ -181,14 +218,14 @@ var logic = (function() {
             }
         },
 
-        resetLogicScores: function() {
+        resetLogicScores: function () {
             whiteNumber = 2;
             blackNumber = 2;
         },
-        getBlackScore: function() {
+        getBlackScore: function () {
             return blackNumber;
         },
-        getWhiteScore: function() {
+        getWhiteScore: function () {
             return whiteNumber;
         }
 
@@ -199,6 +236,11 @@ newGame();
 //cleanBoard();
 //newGame();
 //hideBoard();;
+function newGame() {
+    graphic.createBoard(10);
+    graphic.initBoard();
+    setInitialState();
+}
 
 function addAllListeners() {
     for (var i = 0; i < 10; i++) {
@@ -214,9 +256,6 @@ function addClickListener() {
     move(Number(row), Number(col), logic.getCurrentColor());
 }
 
-function newGame() {
-    setInitialState();
-}
 
 function setInitialState() {
     logic.cleanLogicBoard();
@@ -312,8 +351,9 @@ function eatRivalPieces(row, col) {
 
     return numberOfPieces;
 }
+
 // This function gets index with row and column and direction for the search, and
-// inserts all the pieces that we need to replace, to "replaceablePiecesStack". 
+// inserts all the pieces that we need to replace, to "replaceablePiecesStack".
 // after that, the function replaces all of the pieces that in the stack.
 function findRivalPiecesAndReplace(row, col, rowDir, colDir) {
     var numberOfPieces = 0;
@@ -340,3 +380,5 @@ function findRivalPiecesAndReplace(row, col, rowDir, colDir) {
     return numberOfPieces;
 
 }
+
+
