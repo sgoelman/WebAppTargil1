@@ -1,16 +1,72 @@
 const BLACK = 1;
 const WHITE = 2;
 const EMPTY = 0;
-const HEIGHT = 10;
-const WIDTH = 10;
+
+
+var initBoard = (function () {
+    document.addEventListener("DOMContentLoaded", function () {
+        this.getElementById("newGameButton").addEventListener("click", newGame);
+    }, false);
+
+    return {
+        createBoard: function (boardSize) {
+            var table = '';
+            for (var r = 0; r < boardSize; r++) {
+                table += '<tr>';
+                for (var c = 0; c < boardSize; c++) {
+                    var id_square = r * boardSize + c;
+                    table += '<td class="square" id="' + id_square + '" >\n' +
+                        '<span class="piece"></span> </td>';
+                }
+                table += '</tr>';
+            }
+            table = '<tbody>' + table + '</tbody>';
+            table = '<table class="table" id="board">' + table + '</table>';
+            document.write(table);
+        },
+        initBoard: function () {
+            var table = '';
+            table = table + '<table class="table" id="namesTable">';
+            table = table + '<tbody>\n' +
+                '            <tr>\n' +
+                '            <td class="namesTableCell">\n' +
+                '            <span class="white color">White:</span>\n' +
+                '        </td>\n' +
+                '        <td class="namesTableCell">\n' +
+                '            <span class="white color">0</span>\n' +
+                '            </td>\n' +
+                '            <td class="namesTableCell">\n' +
+                '            <span class="black color">Black:</span>\n' +
+                '        </td>\n' +
+                '        <td class="namesTableCell">\n' +
+                '            <span class="black color">0</span>\n' +
+                '            </td>\n' +
+                '            </tr>\n' +
+                '            </tbody>';
+            table = table + '</table>'
+            document.write(table);
+        }
+
+    }
+})();
+function getBoardSize() {
+    return 10;
+}
+
+var boardSize = getBoardSize();
+newGame(boardSize);
+//cleanBoard();
+//newGame();
+//hideBoard();;
+function newGame(boardSize) {
+    initBoard.createBoard(boardSize);
+    initBoard.initBoard();
+}
+
 
 var graphic = (function () {
     var domGameBoardObject = document.getElementById("board");
     var domNamesTable = document.getElementById("namesTable");
-
-    document.addEventListener("DOMContentLoaded", function () {
-        this.getElementById("newGameButton").addEventListener("click", newGame);
-    }, false);
 
     return {
         setPieceClassNameInDOM: function (row, col, className) {
@@ -96,43 +152,6 @@ var graphic = (function () {
                 elementArray[0].className = "square";
             }
         },
-        createBoard: function (boardSize) {
-            var table = '';
-            for (var r = 0; r < boardSize; r++) {
-                table += '<tr>';
-                for (var c = 0; c < boardSize; c++) {
-                    var id_square = r * boardSize + c;
-                    table += '<td class="square" id="' + id_square + '" >\n' +
-                        '<span class="piece"></span> </td>';
-                }
-                table += '</tr>';
-            }
-            table = '<tbody>' + table + '</tbody>';
-            table = '<table class="table" id="board">' + table + '</table>';
-            document.write(table);
-        },
-        initBoard: function () {
-            var table = '<button id="newGameButton">New Game</button>';
-            table = table + '<table class="table" id="namesTable">';
-            table = table + '<tbody>\n' +
-                '            <tr>\n' +
-                '            <td class="namesTableCell">\n' +
-                '            <span class="white color">White:</span>\n' +
-                '        </td>\n' +
-                '        <td class="namesTableCell">\n' +
-                '            <span class="white color">0</span>\n' +
-                '            </td>\n' +
-                '            <td class="namesTableCell">\n' +
-                '            <span class="black color">Black:</span>\n' +
-                '        </td>\n' +
-                '        <td class="namesTableCell">\n' +
-                '            <span class="black color">0</span>\n' +
-                '            </td>\n' +
-                '            </tr>\n' +
-                '            </tbody>';
-            table = table + '</table>'
-            document.write(table);
-        }
 
     };
 })();
@@ -232,15 +251,7 @@ var logic = (function () {
     };
 })();
 
-newGame();
-//cleanBoard();
-//newGame();
-//hideBoard();;
-function newGame() {
-    graphic.createBoard(10);
-    graphic.initBoard();
-    setInitialState();
-}
+
 
 function addAllListeners() {
     for (var i = 0; i < 10; i++) {
@@ -255,7 +266,10 @@ function addClickListener() {
         col = this.id[1];
     move(Number(row), Number(col), logic.getCurrentColor());
 }
-
+startGame(boardSize);
+function startGame(boardSize) {
+    setInitialState();
+}
 
 function setInitialState() {
     logic.cleanLogicBoard();
@@ -316,7 +330,7 @@ function signSquareOrCleanSquare(row, col) {
 }
 
 function isValidIndex(row, col) {
-    return 0 <= row && row < HEIGHT && 0 <= col && col < WIDTH;
+    return 0 <= row && row < boardSize && 0 <= col && col < boardSize;
 }
 
 function checkIndex(row, col) {
