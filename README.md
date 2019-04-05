@@ -1,2 +1,2 @@
-# WebAppTargil1
-####Created By Yair and Sahar Goelman 
+# WebAppTargil1 : Reversi 
+Created By Yair and Sahar Goelman 
