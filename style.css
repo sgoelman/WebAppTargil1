@@ -1,0 +1,137 @@
+h2 {
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    color: azure;
+}
+
+span {
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    color: azure;
+    font-size: 20px;
+}
+
+body {
+    background: linear-gradient(to left, #232526, #414345);
+    min-width: 850px;
+}
+
+table#board {
+    width: 18.75%;
+    height: 33%;
+    position: static;
+    background: linear-gradient(to left, #757f9a, #d7dde8);
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    border-collapse: collapse;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table#namesTable {
+    width: 400px;
+    height: 10%;
+    position: static;
+    border-collapse: collapse;
+    border: 2px solid white;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to left, #232526, #414345)
+}
+
+#namesTable tr.namesTableCell {
+    text-align: center;
+    position: static;
+    width: 72px;
+    height: 70px;
+}
+
+.color.activePlayer {
+    color: green;
+}
+
+#namesTable tr td.name {
+    text-align: center;
+    position: static;
+    width: 150px;
+    height: 70px;
+}
+
+#namesTable tr td.color {
+    text-align: center;
+    position: static;
+    width: 150px;
+    height: 70px;
+}
+
+#namesTable tr td.numPiece {
+    text-align: center;
+    position: static;
+    width: 40px;
+    height: 70px;
+}
+
+table#board tr td {
+    position: static;
+    border: 2px solid #232526;
+    width: 36px;
+    height: 36px;
+}
+
+#newGameButton {
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    color: #232526;
+    background: linear-gradient(to left, #757f9a, #d7dde8);
+    border: 2px #232526;
+    float: right;
+    margin-top: -386px;
+    margin-right: 105px;
+    margin-left: 68px;
+    max-block-size: max-content;
+    font-size: larger;
+}
+
+#newGameButton:hover {
+    background: #414345;
+    transition: all 0.5s ease-in-out;
+}
+
+table.square {
+    position: static;
+}
+
+table#board tr td.square.valid {
+    background: greenyellow;
+}
+
+
+/*to do: function for the current valid moves */
+
+.piece {
+    border-radius: 50%;
+    display: inline-flex;
+    height: 36px;
+    width: 36px;
+}
+
+.piece.black {
+    background-color: black;
+}
+
+.piece.white {
+    background-color: white;
+}
+
+.piece:hover {
+    background-color: rgb(156, 0, 0);
+    transition: all 0.1s ease-in-out;
+}
+
+.piece.empty {
+    visibility: hidden;
+}
