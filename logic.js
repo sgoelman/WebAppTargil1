@@ -184,6 +184,7 @@ var graphic = (function () {
             statsBoard.rows[1].cells[3].children[0].innerHTML = logic.getBlackTime();
             statsBoard.rows[2].cells[1].children[0].innerHTML = logic.getWhiteOnly2();
             statsBoard.rows[2].cells[3].children[0].innerHTML = logic.getBlackOnly2();
+            statsBoard.rows[3].cells[2].children[0].innerHTML = logic.getGameTime();
         },
         resetScoresInDom: function () {
             domNamesTable.rows[0].cells[1].children[0].innerHTML = "2";
@@ -252,8 +253,9 @@ var logic = (function () {
     window.numBlackTwo = 0;
     window.whiteMoves = 0;
     window.blackMoves = 0;
-    window.whiteAve=0;
-    window.blackAve=0;
+    window.whiteAve = 0;
+    window.blackAve = 0;
+    window.gameTime = 0;
 
     return {
         getLocation: function (i, j) {
@@ -355,6 +357,12 @@ var logic = (function () {
         getWhiteOnly2: function () {
             return numWhiteTwo;
         },
+        getGameTime: function () {
+            var timeSec;
+            timeSec = Math.round(gameTime);
+            return this.secondsToHms(timeSec)
+
+        },
         whoWin: function () {
             var winner = "WHITE";
             if (blackNumber > whiteNumber) {
@@ -362,35 +370,52 @@ var logic = (function () {
             }
             return winner;
         },
+        secondsToHms: function (d) {
+            d = Number(d);
+            var h = Math.floor(d / 3600);
+            var m = Math.floor(d % 3600 / 60);
+            var s = Math.floor(d % 3600 % 60);
+            if (s < 10) {
+                s = "0" + s
+            }
+
+            // var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
+            // var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes, ") : "";
+            // var sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
+            // return hDisplay + mDisplay + sDisplay;
+            return h + ":" + m + ":" + s
+        },
         updateStatistics: function () {
             if (2 === this.getCurrentColor()) {
                 whiteMoves += 1;
-                whiteSec = this.createCountDown(lastDate, true,whiteSec);
-                whiteAve=whiteSec/whiteMoves;
+                whiteSec = this.createCountDown(lastDate, true, whiteSec);
+                whiteAve = whiteSec / whiteMoves;
+
             } else {
                 blackMoves += 1;
-                blackSec = this.createCountDown(lastDate, true ,blackSec);
-                blackAve=blackSec/blackMoves;
+                blackSec = this.createCountDown(lastDate, true, blackSec);
+                blackAve = blackSec / blackMoves;
+
             }
-            if (whiteNumber===2)
-            {
-                numWhiteTwo+=1;
+            if (whiteNumber === 2) {
+                numWhiteTwo += 1;
             }
-            if(blackNumber===2)
-            {
-                numBlackTwo+=1;
+            if (blackNumber === 2) {
+                numBlackTwo += 1;
             }
-            lastDate = Date.now()
+            gameTime = (Date.now() - lastDate) / 1000 + gameTime;
+            lastDate = Date.now();
+
         },
         updateGameOver: function () {
             gameOver = blackNumber + whiteNumber === boardSize * boardSize || blackNumber === 0 || whiteNumber === 0;
         },
-        createCountDown: function (timer, pauseTimer,totalTime) {
+        createCountDown: function (timer, pauseTimer, totalTime) {
             if (timer === 0) {
                 var startTime = Date.now();
             }
             if (pauseTimer) {
-                return (Date.now() - timer) / 1000 +totalTime ;
+                return (Date.now() - timer) / 1000 + totalTime;
             } else {
                 return startTime;
             }
@@ -405,8 +430,8 @@ var logic = (function () {
             whiteTimer = 0;
             numWhiteTwo = 0;
             numBlackTwo = 0;
-            whiteMoves=0;
-            blackMoves=0;
+            whiteMoves = 0;
+            blackMoves = 0;
         }
 
     }
