@@ -4,10 +4,6 @@ const EMPTY = 0;
 
 
 var initBoard = (function () {
-    document.addEventListener("DOMContentLoaded", function () {
-        this.getElementById("newGameButton").addEventListener("click", newGame);
-    }, false);
-
     return {
         createBoard: function (boardSize) {
             var table = '';
@@ -15,18 +11,21 @@ var initBoard = (function () {
                 table += '<tr>';
                 for (var c = 0; c < boardSize; c++) {
                     var id_square = r * boardSize + c;
+                    if (id_square < 10) {
+                        id_square = "0" + id_square;
+                    }
                     table += '<td class="square" id="' + id_square + '" >\n' +
                         '<span class="piece"></span> </td>';
                 }
                 table += '</tr>';
             }
             table = '<tbody>' + table + '</tbody>';
-            table = '<table class="table" id="board">' + table + '</table>';
+            table = '<table id="board">' + table + '</table>';
             document.write(table);
         },
         initBoard: function () {
             var table = '';
-            table = table + '<table class="table" id="namesTable">';
+            table = table + '<table id="namesTable">';
             table = table + '<tbody>\n' +
                 '            <tr>\n' +
                 '            <td class="namesTableCell">\n' +
@@ -45,48 +44,74 @@ var initBoard = (function () {
                 '            </tbody>';
             table = table + '</table>'
             document.write(table);
+        },
+        createStatisticsBoard:function(){
+            var statisticstable = '';
+            statisticstable = statisticstable + '<table id="statsTable">';
+            statisticstable = statisticstable + '<tbody>\n' +
+                '            <tr>\n' +
+                '            <td class="statsCell">\n' +
+                '            <span class="whiteM">White Moves:</span>\n' +
+                '        </td>\n' +
+                '        <td class="statsCell">\n' +
+                '            <span class="whiteMoves">0</span>\n' +
+                '            </td>\n' +
+                '            <td class="statsCell">\n' +
+                '            <span class="blackM">Black Moves:</span>\n' +
+                '        </td>\n' +
+                '        <td class="statsCell">\n' +
+                '            <span class="blackMoves">0</span>\n' +
+                '            </td>\n' +
+                '            </tr>\n' +
+                '            <tr>\n' +
+                '            <td class="statsCell">\n' +
+                '            <span class="whiteT">White Timer:</span>\n' +
+                '        </td>\n' +
+                '        <td class="statsCell">\n' +
+                '            <span class="whiteTimer">0</span>\n' +
+                '            </td>\n' +
+                '            <td class="statsCell">\n' +
+                '            <span class="blackT">Black Timer:</span>\n' +
+                '        </td>\n' +
+                '        <td class="statsCell">\n' +
+                '            <span class="blackTimer">0</span>\n' +
+                '            </td>\n' +
+                '            </tr>\n' +
+                '            </tbody>';
+            statisticstable = statisticstable + '</table>'
+            document.write(statisticstable);
         }
 
     }
 })();
-function getBoardSize() {
-    return 10;
-}
-
-var boardSize = getBoardSize();
-newGame(boardSize);
-//cleanBoard();
-//newGame();
-//hideBoard();;
-function newGame(boardSize) {
-    initBoard.createBoard(boardSize);
-    initBoard.initBoard();
-}
-
 
 var graphic = (function () {
-    var domGameBoardObject = document.getElementById("board");
-    var domNamesTable = document.getElementById("namesTable");
+    var domGameBoardObject = null;
+    var domNamesTable = null;
+    var newGameButton = null;
 
     return {
+        setDomMembers: function () {
+            domGameBoardObject = document.getElementById("board");
+            domNamesTable = document.getElementById("namesTable");
+            newGameButton = document.getElementById("newGameButton");
+        },
         setPieceClassNameInDOM: function (row, col, className) {
             domGameBoardObject.rows[row].cells[col].children[0].className = className;
         },
-        addClickListenerToPieceInDOM: function (row, col, eventName, functionName) {
+        addClickListenerToPieceInDOM: function (row, col) {
             domGameBoardObject.rows[row].cells[col].addEventListener(
                 "click",
-                addClickListener
+                move
             );
         },
         removeClickListenerFromPieceInDOM: function (
             row,
             col,
-            eventName,
-            functionName
         ) {
             domGameBoardObject.rows[row].cells[col].removeEventListener(
                 "click",
-                addClickListener
+                move
             );
         },
         cleanDOMBoard: function () {
@@ -97,6 +122,9 @@ var graphic = (function () {
             }
         },
         setInitialStateInDOMBoard: function () {
+            domGameBoardObject.style.display = "";
+            domNamesTable.style.display = "";
+
             graphic.signCurrentPlayer();
             graphic.resetScoresInDom();
             domGameBoardObject.rows[4].cells[4].children[0].className = "white piece";
@@ -109,13 +137,16 @@ var graphic = (function () {
             signAllValidSquaresAround(5, 4);
             signAllValidSquaresAround(5, 5);
 
-            domGameBoardObject.rows[4].cells[4].removeEventListener("click", addClickListener);
-            domGameBoardObject.rows[4].cells[5].removeEventListener("click", addClickListener);
-            domGameBoardObject.rows[5].cells[4].removeEventListener("click", addClickListener);
-            domGameBoardObject.rows[5].cells[5].removeEventListener("click", addClickListener);
+            domGameBoardObject.rows[4].cells[4].removeEventListener("click", move);
+            domGameBoardObject.rows[4].cells[5].removeEventListener("click", move);
+            domGameBoardObject.rows[5].cells[4].removeEventListener("click", move);
+            domGameBoardObject.rows[5].cells[5].removeEventListener("click", move);
         },
         hideBoardInDOM: function () {
             domGameBoardObject.style.display = "none";
+        },
+        hideNamesTableInDOM: function () {
+            domNamesTable.style.display = "none";
         },
         addPiecesScore: function () {
             domNamesTable.rows[0].cells[1].children[0].innerHTML = logic.getWhiteScore();
@@ -152,7 +183,24 @@ var graphic = (function () {
                 elementArray[0].className = "square";
             }
         },
-
+        addListenerToNewGameButton: function () {
+            newGameButton.addEventListener("click", startGame);
+        },
+        removeAllClickListener: function () {
+            var size = getBoardSize();
+            for (var i = 0; i < size; i++) {
+                for (var j = 0; j < size; j++) {
+                    graphic.removeClickListenerFromPieceInDOM(i, j);
+                }
+            }
+        },
+        changeTextOfButton: function () {
+            if (logic.isGameOver()) {
+                newGameButton.innerHTML = "New Game";
+            } else {
+                newGameButton.innerHTML = "End Game";
+            }
+        }
     };
 })();
 
@@ -163,6 +211,14 @@ var logic = (function () {
     var currentPlayer = false; // white player=false, black player =true
     var currentColor = WHITE;
     var rivalColor = BLACK;
+    var gameOver = false;
+    window.globalTimer = null;
+    window.blackSec = null;
+    window.whiteSec = null;
+    window.numWhiteTwo = null;
+    window.numBlackTwo = null;
+    window.whiteMoves = null;
+    window.blackMoves = null;
 
     return {
         getLocation: function (i, j) {
@@ -236,7 +292,6 @@ var logic = (function () {
                 }
             }
         },
-
         resetLogicScores: function () {
             whiteNumber = 2;
             blackNumber = 2;
@@ -246,12 +301,60 @@ var logic = (function () {
         },
         getWhiteScore: function () {
             return whiteNumber;
+        },
+        whoWin: function () {
+            var winner = "WHITE";
+            if (blackNumber > whiteNumber) {
+                winner = "BLACK";
+            }
+            return winner;
+        },
+        switchStatistics: function () {
+            if (2 === this.getCurrentColor()) {
+                whiteMoves += 1;
+                whiteSec += this.createCountDown(lastDate, true, whiteSec)
+            } else {
+                blackMoves += 1;
+                blackSec += this.createCountDown(lastDate, true, blackSec)
+            }
+            lastDate = Date.now()
+        },
+        updateGameOver: function () {
+            gameOver = blackNumber + whiteNumber === boardSize * boardSize || blackNumber === 0 || whiteNumber === 0;
+        },
+        createCountDown: function (timer, pauseTimer, seconds) {
+            if (timer === 0) {
+                var startTime = Date.now();
+            }
+            if (pauseTimer) {
+                return (Date.now() - timer) / 1000 + seconds;
+            } else {
+                return startTime;
+            }
+
+        },
+        isGameOver: function () {
+            return gameOver;
+        },
+        startStatistics: function () {
+            lastDate = this.createCountDown(0, false);
+            blackSec = 0;
+            whiteSec = 0;
+            numWhiteTwo = 0;
+            numBlackTwo = 0;
         }
 
-    };
+    }
+        ;
 })();
 
+function getBoardSize() {
+    return 10;
+}
 
+var boardSize = getBoardSize();
+newGame(boardSize);
+startGame();
 
 function addAllListeners() {
     for (var i = 0; i < 10; i++) {
@@ -261,13 +364,22 @@ function addAllListeners() {
     }
 }
 
-function addClickListener() {
+/*
+function move() {
     var row = this.id[0],
         col = this.id[1];
     move(Number(row), Number(col), logic.getCurrentColor());
+}*/
+
+function newGame(boardSize) {
+    initBoard.createBoard(boardSize);
+    initBoard.initBoard();
+    initBoard.createStatisticsBoard();
+    graphic.setDomMembers();
+    graphic.addListenerToNewGameButton();
 }
-startGame(boardSize);
-function startGame(boardSize) {
+
+function startGame() {
     setInitialState();
 }
 
@@ -277,10 +389,15 @@ function setInitialState() {
     graphic.cleanDOMBoard();
     addAllListeners();
     graphic.setInitialStateInDOMBoard();
+    logic.startStatistics()
 }
 
 function move(row, col) {
+    var row = Number(this.id[0]);
+    var col = Number(this.id[1]);
     var numberOfPieces = 0;
+    document.getElementById("winner").style.display = "";
+
     if (isValidMove(row, col)) {
         graphic.cleanInvalidSquare(row, col);
         signAllValidSquaresAround(row, col);
@@ -288,9 +405,17 @@ function move(row, col) {
         numberOfPieces += eatRivalPieces(row, col);
         logic.addPiecesToLogicScore(numberOfPieces + 1);
         graphic.addPiecesScore();
+        logic.switchStatistics();
         logic.changePlayer();
-    }
+        logic.updateGameOver();
 
+        if (logic.isGameOver()) {
+            graphic.changeTextOfButton();
+            hideBoard();
+            document.getElementById("winner").style.display = "";
+            document.getElementById("winner").innerHTML = "The winner is: " + logic.whoWin();
+        }
+    }
 }
 
 function isValidMove(row, col) {
@@ -347,8 +472,10 @@ function getTypePiece(row, col) {
 
 function hideBoard() {
     logic.cleanLogicBoard();
+    graphic.removeAllClickListener();
     graphic.cleanDOMBoard();
     graphic.hideBoardInDOM();
+    graphic.hideNamesTableInDOM();
 }
 
 function eatRivalPieces(row, col) {
@@ -394,5 +521,3 @@ function findRivalPiecesAndReplace(row, col, rowDir, colDir) {
     return numberOfPieces;
 
 }
-
-

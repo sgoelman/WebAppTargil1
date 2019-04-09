@@ -2,24 +2,28 @@ h2 {
     text-align: center;
     font-family: 'Orbitron', sans-serif;
     color: azure;
+    font-size: 3vw;
 }
 
 span {
     text-align: center;
     font-family: 'Orbitron', sans-serif;
     color: azure;
-    font-size: 20px;
+    font-size: 1.5vw;
 }
 
 body {
     background: linear-gradient(to left, #232526, #414345);
-    min-width: 850px;
+    min-width: 1024px;
+    min-height: 768px;
+    align-items: center;
+    position: relative;
 }
 
 table#board {
-    width: 18.75%;
-    height: 33%;
-    position: static;
+    width: 40vw;
+    height: 40vw;
+    position: relative;
     background: linear-gradient(to left, #757f9a, #d7dde8);
     /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
     border-collapse: collapse;
@@ -28,95 +32,90 @@ table#board {
     margin-right: auto;
 }
 
+table#board tr td {
+    position: relative;
+    border: 2px solid #232526;
+}
+
+.piece {
+    border-radius: 50%;
+    display: inline-flex;
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+
 table#namesTable {
-    width: 400px;
-    height: 10%;
-    position: static;
+    width: 40vw;
+    height: 5vw;
+    position: relative;
     border-collapse: collapse;
     border: 2px solid white;
     text-align: center;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 10px;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(to left, #232526, #414345)
+    margin-top: 2vw;
+    background: linear-gradient(to left, #232526, #414345);
+}
+table#statsTable {
+    width: 40vw;
+    height: 5vw;
+    position: relative;
+    border-collapse: collapse;
+    border: 2px solid white;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2vw;
+    background: linear-gradient(to left, #232526, #414345);
 }
 
-#namesTable tr.namesTableCell {
+#winner {
+    color: red;
+    font-size: 3vw;
+    margin-left: auto;
+    margin-right: auto;
     text-align: center;
-    position: static;
-    width: 72px;
-    height: 70px;
+}
+
+#namesTable tr td.color {
+    text-align: center;
+}
+#statsTable tr td.color {
+    text-align: center;
+}
+
+#namesTable tr td.numPiece {
+    text-align: center;
 }
 
 .color.activePlayer {
     color: green;
 }
 
-#namesTable tr td.name {
+button {
     text-align: center;
-    position: static;
-    width: 150px;
-    height: 70px;
-}
-
-#namesTable tr td.color {
-    text-align: center;
-    position: static;
-    width: 150px;
-    height: 70px;
-}
-
-#namesTable tr td.numPiece {
-    text-align: center;
-    position: static;
-    width: 40px;
-    height: 70px;
-}
-
-table#board tr td {
-    position: static;
-    border: 2px solid #232526;
-    width: 36px;
-    height: 36px;
-}
-
-#newGameButton {
-    text-align: center;
+    font-size: 3vw;
     font-family: 'Orbitron', sans-serif;
     color: #232526;
     background: linear-gradient(to left, #757f9a, #d7dde8);
     border: 2px #232526;
-    float: right;
-    margin-top: -386px;
-    margin-right: 105px;
-    margin-left: 68px;
-    max-block-size: max-content;
     font-size: larger;
+    margin-top: 0.5vw;
+    width: 10vw;
+    height: 5vw;
+    position: absolute;
+    right: 20%;
+    left: 80%;
 }
 
-#newGameButton:hover {
+button:hover {
     background: #414345;
     transition: all 0.5s ease-in-out;
 }
 
-table.square {
-    position: static;
-}
-
 table#board tr td.square.valid {
     background: greenyellow;
-}
-
-
-/*to do: function for the current valid moves */
-
-.piece {
-    border-radius: 50%;
-    display: inline-flex;
-    height: 36px;
-    width: 36px;
 }
 
 .piece.black {
