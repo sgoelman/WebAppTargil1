@@ -31,7 +31,7 @@ The amount of each moves by each player are displayed
 
 ### End of the game 
 
-The game ends when:
+#### The game ends when:
 
     1. One player wins, by making his color dominant on the board when there are no places left on the board .
     2. All the pieces are of one color - the winners .
