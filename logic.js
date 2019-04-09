@@ -29,13 +29,13 @@ var initBoard = (function () {
             table = table + '<tbody>\n' +
                 '            <tr>\n' +
                 '            <td class="namesTableCell">\n' +
-                '            <span class="white color">White:</span>\n' +
+                '            <span class="white color">White Score:</span>\n' +
                 '        </td>\n' +
                 '        <td class="namesTableCell">\n' +
                 '            <span class="white color">0</span>\n' +
                 '            </td>\n' +
                 '            <td class="namesTableCell">\n' +
-                '            <span class="black color">Black:</span>\n' +
+                '            <span class="black color">Black Score:</span>\n' +
                 '        </td>\n' +
                 '        <td class="namesTableCell">\n' +
                 '            <span class="black color">0</span>\n' +
@@ -45,7 +45,7 @@ var initBoard = (function () {
             table = table + '</table>'
             document.write(table);
         },
-        createStatisticsBoard:function(){
+        createStatisticsBoard: function () {
             var statisticstable = '';
             statisticstable = statisticstable + '<table id="statsTable">';
             statisticstable = statisticstable + '<tbody>\n' +
@@ -65,19 +65,42 @@ var initBoard = (function () {
                 '            </tr>\n' +
                 '            <tr>\n' +
                 '            <td class="statsCell">\n' +
-                '            <span class="whiteT">White Timer:</span>\n' +
+                '            <span class="whiteT">White Average:</span>\n' +
                 '        </td>\n' +
                 '        <td class="statsCell">\n' +
                 '            <span class="whiteTimer">0</span>\n' +
                 '            </td>\n' +
                 '            <td class="statsCell">\n' +
-                '            <span class="blackT">Black Timer:</span>\n' +
+                '            <span class="blackT">Black Average:</span>\n' +
                 '        </td>\n' +
                 '        <td class="statsCell">\n' +
                 '            <span class="blackTimer">0</span>\n' +
                 '            </td>\n' +
                 '            </tr>\n' +
-                '            </tbody>';
+                '            <tr>\n' +
+                '            <td class="statsCell">\n' +
+                '            <span class="white2">White Only 2:</span>\n' +
+                '        </td>\n' +
+                '        <td class="statsCell">\n' +
+                '            <span class="whiteTwo">0</span>\n' +
+                '            </td>\n' +
+                '            <td class="statsCell">\n' +
+                '            <span class="black2">Black Only 2:</span>\n' +
+                '        </td>\n' +
+                '        <td class="statsCell">\n' +
+                '            <span class="blackTwo">0</span>\n' +
+                '            </td>\n' +
+                '            </tr>\n' +
+                '            <td>\n' +
+                '            <td class="statsCell">\n' +
+                '            <span class="gameT">Game Time:</span>\n' +
+                '        </td>\n' +
+                '        <td class="statsCell">\n' +
+                '            <span class="gameTime">0</span>\n' +
+                '            </td>\n' +
+                '<td </td>'
+            '            <tr>\n' +
+            '            </tbody>';
             statisticstable = statisticstable + '</table>'
             document.write(statisticstable);
         }
@@ -89,11 +112,13 @@ var graphic = (function () {
     var domGameBoardObject = null;
     var domNamesTable = null;
     var newGameButton = null;
+    var statsBoard = null;
 
     return {
         setDomMembers: function () {
             domGameBoardObject = document.getElementById("board");
             domNamesTable = document.getElementById("namesTable");
+            statsBoard = document.getElementById("statsTable");
             newGameButton = document.getElementById("newGameButton");
         },
         setPieceClassNameInDOM: function (row, col, className) {
@@ -151,6 +176,14 @@ var graphic = (function () {
         addPiecesScore: function () {
             domNamesTable.rows[0].cells[1].children[0].innerHTML = logic.getWhiteScore();
             domNamesTable.rows[0].cells[3].children[0].innerHTML = logic.getBlackScore();
+        },
+        addStats: function () {
+            statsBoard.rows[0].cells[1].children[0].innerHTML = logic.getWhiteMoves();
+            statsBoard.rows[0].cells[3].children[0].innerHTML = logic.getBlackMoves();
+            statsBoard.rows[1].cells[1].children[0].innerHTML = logic.getWhiteTime();
+            statsBoard.rows[1].cells[3].children[0].innerHTML = logic.getBlackTime();
+            statsBoard.rows[2].cells[1].children[0].innerHTML = logic.getWhiteOnly2();
+            statsBoard.rows[2].cells[3].children[0].innerHTML = logic.getBlackOnly2();
         },
         resetScoresInDom: function () {
             domNamesTable.rows[0].cells[1].children[0].innerHTML = "2";
@@ -212,13 +245,15 @@ var logic = (function () {
     var currentColor = WHITE;
     var rivalColor = BLACK;
     var gameOver = false;
-    window.globalTimer = null;
-    window.blackSec = null;
-    window.whiteSec = null;
-    window.numWhiteTwo = null;
-    window.numBlackTwo = null;
-    window.whiteMoves = null;
-    window.blackMoves = null;
+    window.globalTimer = 0;
+    window.blackSec = 0;
+    window.whiteSec = 0;
+    window.numWhiteTwo = 0;
+    window.numBlackTwo = 0;
+    window.whiteMoves = 0;
+    window.blackMoves = 0;
+    window.whiteAve=0;
+    window.blackAve=0;
 
     return {
         getLocation: function (i, j) {
@@ -302,6 +337,24 @@ var logic = (function () {
         getWhiteScore: function () {
             return whiteNumber;
         },
+        getBlackMoves: function () {
+            return blackMoves;
+        },
+        getWhiteMoves: function () {
+            return whiteMoves;
+        },
+        getBlackTime: function () {
+            return Math.round(blackAve);
+        },
+        getWhiteTime: function () {
+            return Math.round(whiteAve);
+        },
+        getBlackOnly2: function () {
+            return numBlackTwo;
+        },
+        getWhiteOnly2: function () {
+            return numWhiteTwo;
+        },
         whoWin: function () {
             var winner = "WHITE";
             if (blackNumber > whiteNumber) {
@@ -309,25 +362,35 @@ var logic = (function () {
             }
             return winner;
         },
-        switchStatistics: function () {
+        updateStatistics: function () {
             if (2 === this.getCurrentColor()) {
                 whiteMoves += 1;
-                whiteSec += this.createCountDown(lastDate, true, whiteSec)
+                whiteSec = this.createCountDown(lastDate, true,whiteSec);
+                whiteAve=whiteSec/whiteMoves;
             } else {
                 blackMoves += 1;
-                blackSec += this.createCountDown(lastDate, true, blackSec)
+                blackSec = this.createCountDown(lastDate, true ,blackSec);
+                blackAve=blackSec/blackMoves;
+            }
+            if (whiteNumber===2)
+            {
+                numWhiteTwo+=1;
+            }
+            if(blackNumber===2)
+            {
+                numBlackTwo+=1;
             }
             lastDate = Date.now()
         },
         updateGameOver: function () {
             gameOver = blackNumber + whiteNumber === boardSize * boardSize || blackNumber === 0 || whiteNumber === 0;
         },
-        createCountDown: function (timer, pauseTimer, seconds) {
+        createCountDown: function (timer, pauseTimer,totalTime) {
             if (timer === 0) {
                 var startTime = Date.now();
             }
             if (pauseTimer) {
-                return (Date.now() - timer) / 1000 + seconds;
+                return (Date.now() - timer) / 1000 +totalTime ;
             } else {
                 return startTime;
             }
@@ -338,10 +401,12 @@ var logic = (function () {
         },
         startStatistics: function () {
             lastDate = this.createCountDown(0, false);
-            blackSec = 0;
-            whiteSec = 0;
+            blackTimer = 0;
+            whiteTimer = 0;
             numWhiteTwo = 0;
             numBlackTwo = 0;
+            whiteMoves=0;
+            blackMoves=0;
         }
 
     }
@@ -364,12 +429,6 @@ function addAllListeners() {
     }
 }
 
-/*
-function move() {
-    var row = this.id[0],
-        col = this.id[1];
-    move(Number(row), Number(col), logic.getCurrentColor());
-}*/
 
 function newGame(boardSize) {
     initBoard.createBoard(boardSize);
@@ -405,7 +464,8 @@ function move(row, col) {
         numberOfPieces += eatRivalPieces(row, col);
         logic.addPiecesToLogicScore(numberOfPieces + 1);
         graphic.addPiecesScore();
-        logic.switchStatistics();
+        logic.updateStatistics();
+        graphic.addStats();
         logic.changePlayer();
         logic.updateGameOver();
 
