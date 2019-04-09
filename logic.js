@@ -246,16 +246,16 @@ var logic = (function () {
     var currentColor = WHITE;
     var rivalColor = BLACK;
     var gameOver = false;
-    window.globalTimer = 0;
-    window.blackSec = 0;
-    window.whiteSec = 0;
-    window.numWhiteTwo = 0;
-    window.numBlackTwo = 0;
-    window.whiteMoves = 0;
-    window.blackMoves = 0;
-    window.whiteAve = 0;
-    window.blackAve = 0;
-    window.gameTime = 0;
+    var blackSec = 0;
+    var whiteSec = 0;
+    var numWhiteTwo = 0;
+    var numBlackTwo = 0;
+    var whiteMoves = 0;
+    var blackMoves = 0;
+    var whiteAve = 0;
+    var blackAve = 0;
+    var gameTime = 0;
+
 
     return {
         getLocation: function (i, j) {
@@ -272,6 +272,19 @@ var logic = (function () {
                     board[i][j] = EMPTY;
                 }
             }
+        },
+        cleanStatsTable:function()
+        {
+             blackSec = 0;
+             whiteSec = 0;
+             numWhiteTwo = 0;
+             numBlackTwo = 0;
+             whiteMoves = 0;
+             blackMoves = 0;
+             whiteAve = 0;
+             blackAve = 0;
+             gameTime = 0;
+             graphic.addStats()
         },
         setInitialStateInLogicBoard: function () {
             activePlayer = false;
@@ -305,9 +318,7 @@ var logic = (function () {
             }
             graphic.signCurrentPlayer();
         },
-        getCurrentPlayer: function () {
-            return currentPlayer;
-        },
+
         getCurrentColor: function () {
             return currentColor;
         },
@@ -378,11 +389,6 @@ var logic = (function () {
             if (s < 10) {
                 s = "0" + s
             }
-
-            // var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
-            // var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes, ") : "";
-            // var sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
-            // return hDisplay + mDisplay + sDisplay;
             return h + ":" + m + ":" + s
         },
         updateStatistics: function () {
@@ -390,19 +396,19 @@ var logic = (function () {
                 whiteMoves += 1;
                 whiteSec = this.createCountDown(lastDate, true, whiteSec);
                 whiteAve = whiteSec / whiteMoves;
-
+                if (whiteNumber === 2) {
+                    numWhiteTwo += 1;
+                }
             } else {
                 blackMoves += 1;
                 blackSec = this.createCountDown(lastDate, true, blackSec);
                 blackAve = blackSec / blackMoves;
+                if (blackNumber === 2) {
+                    numBlackTwo += 1;
+                }
+            }
 
-            }
-            if (whiteNumber === 2) {
-                numWhiteTwo += 1;
-            }
-            if (blackNumber === 2) {
-                numBlackTwo += 1;
-            }
+
             gameTime = (Date.now() - lastDate) / 1000 + gameTime;
             lastDate = Date.now();
 
@@ -469,11 +475,13 @@ function startGame() {
 
 function setInitialState() {
     logic.cleanLogicBoard();
+    logic.cleanStatsTable();
     logic.setInitialStateInLogicBoard();
     graphic.cleanDOMBoard();
     addAllListeners();
     graphic.setInitialStateInDOMBoard();
-    logic.startStatistics()
+    logic.startStatistics();
+
 }
 
 function move(row, col) {
